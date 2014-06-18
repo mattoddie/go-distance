@@ -1,0 +1,1 @@
+# Distance package for golang
