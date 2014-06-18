@@ -18,7 +18,7 @@ const (
 )
 
 func (d Distance) String() string {
-	return fmt.Sprintf("%v", float64(d))
+	return fmt.Sprintf("%vm", float64(d))
 }
 
 func (d Distance) Metres() float64 {
