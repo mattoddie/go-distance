@@ -2,6 +2,7 @@ package distance
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Distance float64
@@ -51,4 +52,18 @@ func (d Distance) Yards() float64 {
 
 func (d Distance) Feet() float64 {
 	return float64(d / Foot)
+}
+
+func (d *Distance) UnmarshalJSON(b []byte) (err error) {
+	s := strings.Trim(string(b), `"`)
+	if s == "null" {
+		return
+	}
+
+	*d, err = ParseDistance(s)
+	return
+}
+
+func (d *Distance) MarshalJSON() ([]byte, error) {
+	return []byte(d.String()), nil
 }
