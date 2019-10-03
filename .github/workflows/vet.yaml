@@ -1,0 +1,22 @@
+name: Vet
+on: [push]
+
+jobs:
+  vet:
+    name: Vet
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest]
+        go: [1.11, 1.12, 1.13]
+    steps:
+      - name: Set up Go ${{ matrix.go }}
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Run vet
+        run: go vet ./...
