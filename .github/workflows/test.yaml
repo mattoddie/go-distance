@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest, windows-latest]
-        go: [1.11, 1.12, 1.13]
+        go: [1.11, 1.12, 1.13, 1.14, 1.15, 1.16]
     steps:
       - name: Set up Go ${{ matrix.go }}
         uses: actions/setup-go@v1
@@ -17,6 +17,9 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v1
+
+      - name: Run vet
+        run: go vet ./...
 
       - name: Run tests
         run: go test ./...
