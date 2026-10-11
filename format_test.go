@@ -1,6 +1,7 @@
 package distance
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -14,42 +15,51 @@ func TestToString(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if out := tc.in.String(); out != tc.expected {
-			t.Errorf("Wrong string, got %v expected %v", out, tc.in)
-		}
+		t.Run(tc.expected, func(t *testing.T) {
+			if out := tc.in.String(); out != tc.expected {
+				t.Errorf("Wrong string, got %v expected %v", out, tc.expected)
+			}
+		})
 	}
 }
 
-func TestParseDistanceToMetres(t *testing.T) {
+func TestParseToMetres(t *testing.T) {
 	testCases := []struct {
 		in       string
 		expected float64
 	}{
 		{"5m", 5},
 		{"-5m", -5},
+		{"+5m", 5},
+		{"0", 0},
 		{"10m", 10},
 		{"120cm", 1.2},
 		{"1245mm", 1.245},
 		{"2mi", 3218.688},
 		{"2km", 2000},
+		{"1.5km", 1500},
+		{".5m", 0.5},
+		{"1km500m", 1500},
 		{"100yd", 91.44},
 		{"300ft", 91.44},
 		{"3600in", 91.44000000000001},
 	}
 
 	for _, tc := range testCases {
-		calculated, err := ParseDistance(tc.in)
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
+		t.Run(tc.in, func(t *testing.T) {
+			calculated, err := Parse(tc.in)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
 
-		if calculated.Metres() != tc.expected {
-			t.Errorf("Wrong distance, got %v expected %v", calculated.Metres(), tc.expected)
-		}
+			if calculated.Metres() != tc.expected {
+				t.Errorf("Wrong distance, got %v expected %v", calculated.Metres(), tc.expected)
+			}
+		})
 	}
 }
 
-func TestParseDistanceToMiles(t *testing.T) {
+func TestParseToMiles(t *testing.T) {
 	testCases := []struct {
 		in       string
 		expected float64
@@ -60,29 +70,65 @@ func TestParseDistanceToMiles(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		calculated, err := ParseDistance(tc.in)
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
+		t.Run(tc.in, func(t *testing.T) {
+			calculated, err := Parse(tc.in)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
 
-		if calculated.Miles() != tc.expected {
-			t.Errorf("Wrong distance, got %v expected %v", calculated.Miles(), tc.expected)
-		}
+			if calculated.Miles() != tc.expected {
+				t.Errorf("Wrong distance, got %v expected %v", calculated.Miles(), tc.expected)
+			}
+		})
 	}
 }
 
 func TestBadParses(t *testing.T) {
+	testCases := []string{
+		"",
+		"-",
+		"5",
+		"5m5",
+		".m",
+		"5furlong",
+		"m",
+	}
+
+	for _, in := range testCases {
+		t.Run(in, func(t *testing.T) {
+			if _, err := Parse(in); err == nil {
+				t.Errorf("Expected error for %q", in)
+			}
+		})
+	}
+}
+
+func TestParseLongNumbers(t *testing.T) {
 	testCases := []struct {
-		in string
+		in       string
+		expected Distance
 	}{
-		{"5"},
-		{"5m5"},
+		{"0.0000001m", 1e-7},
+		{"1000000000000000000000m", 1e21},
+		{"0.12345678901234567890123m", 0.12345678901234567890123},
 	}
 
 	for _, tc := range testCases {
-		_, err := ParseDistance(tc.in)
-		if err == nil {
-			t.Errorf("Expected error for %v", tc.in)
-		}
+		t.Run(tc.in, func(t *testing.T) {
+			got, err := Parse(tc.in)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+			if got != tc.expected {
+				t.Errorf("Wrong distance, got %v expected %v", got, tc.expected)
+			}
+		})
+	}
+}
+
+func TestParseOverflow(t *testing.T) {
+	in := "1" + strings.Repeat("0", 400) + "m"
+	if _, err := Parse(in); err == nil {
+		t.Error("Expected error for overflowing distance")
 	}
 }

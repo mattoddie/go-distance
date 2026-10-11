@@ -1,3 +1,3 @@
-module github.com/mattoddie/go-distance
+module github.com/mattoddie/go-distance/v2
 
-go 1.13
+go 1.22

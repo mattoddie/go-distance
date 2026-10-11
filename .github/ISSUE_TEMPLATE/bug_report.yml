@@ -1,0 +1,33 @@
+name: Bug report
+description: Report something that doesn't work as documented.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How can we reproduce it?
+      description: A short Go program or the input string that triggers the problem.
+      render: go
+    validations:
+      required: true
+  - type: input
+    id: module-version
+    attributes:
+      label: go-distance version
+      placeholder: v2.0.0
+    validations:
+      required: true
+  - type: input
+    id: go-version
+    attributes:
+      label: Output of `go version`
+      placeholder: go version go1.27.2 linux/amd64
+    validations:
+      required: true
