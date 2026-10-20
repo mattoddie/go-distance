@@ -57,11 +57,38 @@ that file with your fix so it becomes a regression test.
   test when it helps.
 - Add an entry under "Unreleased" in [CHANGELOG.md](CHANGELOG.md) for
   user-visible changes.
-- Write commit messages with a short imperative subject line (for example
-  "Add nautical mile unit"), followed by a body explaining why.
+- Use [Conventional Commits](#commit-messages) for commit messages and the
+  pull request title.
 
 CI runs the tests on Linux, macOS and Windows, along with linting, fuzzing,
 govulncheck and CodeQL. All checks must pass before merging.
+
+### Commit messages
+
+Commit messages and pull request titles follow
+[Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
+Pull requests are squash-merged, so the title becomes the commit on `main`;
+CI checks that it matches.
+
+```text
+<type>(<optional scope>)<optional !>: <description>
+```
+
+For example `fix: reject empty units in Parse`,
+`feat: add nautical mile unit`, `docs: explain the JSON format` or
+`ci(deps): bump the github-actions group with 2 updates`.
+
+- **Types:** `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`
+  (dependencies and toolchain), `ci` (workflows), `chore` (anything else,
+  such as `chore(release): v1.2.0`), `revert` and `style`.
+- **Description:** imperative mood, lower-case first word, no trailing full
+  stop. Keep the whole subject to 72 characters or fewer.
+- **Breaking changes:** add `!` after the type or scope, for example
+  `feat!: …`, and a `BREAKING CHANGE: …` footer in the body (or the pull
+  request description). List the change under "Breaking changes" in the
+  changelog too.
+- **Body:** explain why when it isn't obvious, and reference issues with
+  `Fixes #123`.
 
 ## Compatibility
 

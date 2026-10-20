@@ -1,0 +1,29 @@
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  conventional:
+    name: Conventional Commits title
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      # The title is passed through env, not interpolated into the script, so
+      # it can't inject shell.
+      - name: Check the title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9._/-]+\))?!?: [^[:space:]].*[^.]$'
+          if [[ ! "$TITLE" =~ $pattern ]]; then
+            echo "::error title=PR title::Use Conventional Commits, e.g. 'fix: reject empty units in Parse' (see CONTRIBUTING.md)."
+            exit 1
+          fi
+          if (( ${#TITLE} > 100 )); then
+            echo "::error title=PR title::Keep the title under 100 characters (72 or fewer is better)."
+            exit 1
+          fi
