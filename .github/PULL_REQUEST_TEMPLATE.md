@@ -1,3 +1,5 @@
+<!-- Title: use Conventional Commits, e.g. "fix: reject empty units in Parse". It becomes the commit on main. -->
+
 ## What does this change?
 
 <!-- Describe the change and why it's needed. Link any related issue, e.g. "Fixes #12". -->
